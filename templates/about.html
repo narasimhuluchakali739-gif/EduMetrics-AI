@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}About Project &amp; Architecture | EduMetrics AI{% endblock %}
+
+{% block content %}
+<div class="page-container" style="max-width: 1000px;">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3.5rem;">
+        <span class="badge badge-primary" style="margin-bottom:0.75rem;">B.Tech AIML Final-Year Project</span>
+        <h1 style="font-size:2.5rem;margin-bottom:0.75rem;">Project Architecture &amp; Methodology</h1>
+        <p style="font-size:1.15rem;color:var(--text-muted);max-width:700px;margin:0 auto;">
+            An industry-grade machine learning application demonstrating full-stack engineering, rigorous statistical modeling, and ethical pedagogical AI design.
+        </p>
+    </div>
+
+    <!-- Executive Summary Card -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="book-open" style="width:20px;height:20px;color:var(--primary);"></i>
+                    Executive Summary &amp; Motivation
+                </div>
+            </div>
+        </div>
+        <p style="margin-bottom:1rem;line-height:1.7;">
+            In modern university higher education, early identification of students at risk of academic underperformance is critical for timely remedial intervention. Traditional methods often rely on post-examination retrospectives—when remediation is already too late.
+        </p>
+        <p style="margin-bottom:0;line-height:1.7;">
+            <strong>EduMetrics AI</strong> bridges this gap by applying cross-validated machine learning algorithms to continuous educational indicators (study dedication, attendance presence, coursework completion, neurocognitive rest, and mentorship). The system generates actionable predictive forecasts with clear uncertainty bounds, factor attribution explanations, and non-judgmental guidance strategies.
+        </p>
+    </div>
+
+    <!-- System Architecture Section -->
+    <div id="architecture" class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="layers" style="width:20px;height:20px;color:var(--primary);"></i>
+                    End-to-End System Architecture
+                </div>
+                <div class="card-subtitle">Modular 4-tier production engineering pipeline</div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:1rem;margin-top:1rem;">
+            <div style="padding:1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--primary);text-transform:uppercase;margin-bottom:0.4rem;">Tier 1 &bull; Data Layer</div>
+                <h4 style="margin-bottom:0.5rem;">Data Engineering</h4>
+                <ul style="font-size:0.85rem;color:var(--text-secondary);padding-left:1.2rem;line-height:1.6;">
+                    <li>Synthetic cohort synthesis (N=2,500)</li>
+                    <li>Feature distribution modeling</li>
+                    <li>Threshold penalty formulation</li>
+                    <li>Train/Test split (80/20)</li>
+                </ul>
+            </div>
+
+            <div style="padding:1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--indigo-500);text-transform:uppercase;margin-bottom:0.4rem;">Tier 2 &bull; ML Engine</div>
+                <h4 style="margin-bottom:0.5rem;">Modeling &amp; Evaluation</h4>
+                <ul style="font-size:0.85rem;color:var(--text-secondary);padding-left:1.2rem;line-height:1.6;">
+                    <li>4-algorithm benchmark comparison</li>
+                    <li>5-Fold cross-validation</li>
+                    <li>Hyperparameter optimization</li>
+                    <li>Joblib serialization &amp; metadata export</li>
+                </ul>
+            </div>
+
+            <div style="padding:1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--emerald-500);text-transform:uppercase;margin-bottom:0.4rem;">Tier 3 &bull; Application</div>
+                <h4 style="margin-bottom:0.5rem;">Flask Backend &amp; DB</h4>
+                <ul style="font-size:0.85rem;color:var(--text-secondary);padding-left:1.2rem;line-height:1.6;">
+                    <li>Singleton model inference caching</li>
+                    <li>REST API prediction endpoint</li>
+                    <li>SQLite persistent storage</li>
+                    <li>CSV export &amp; report generation</li>
+                </ul>
+            </div>
+
+            <div style="padding:1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);">
+                <div style="font-size:0.75rem;font-weight:700;color:var(--secondary);text-transform:uppercase;margin-bottom:0.4rem;">Tier 4 &bull; Presentation</div>
+                <h4 style="margin-bottom:0.5rem;">Responsive SaaS UI</h4>
+                <ul style="font-size:0.85rem;color:var(--text-secondary);padding-left:1.2rem;line-height:1.6;">
+                    <li>SaaS design system (Linear/Vercel)</li>
+                    <li>Chart.js responsive charts</li>
+                    <li>Client-side input synchronizers</li>
+                    <li>Dark/Light mode persistence</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Grid -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="code-2" style="width:20px;height:20px;color:var(--primary);"></i>
+                    Technology Stack &amp; Tools
+                </div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;">
+            <div>
+                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">Backend &amp; Machine Learning</h4>
+                <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                    <span class="badge badge-neutral">Python 3.13</span>
+                    <span class="badge badge-primary">Flask 3.1</span>
+                    <span class="badge badge-primary">Scikit-Learn 1.8</span>
+                    <span class="badge badge-neutral">NumPy 2.4</span>
+                    <span class="badge badge-neutral">Pandas 3.0</span>
+                    <span class="badge badge-neutral">Joblib 1.5</span>
+                    <span class="badge badge-neutral">SQLite 3</span>
+                    <span class="badge badge-neutral">PyTest</span>
+                </div>
+            </div>
+
+            <div>
+                <h4 style="font-size:0.95rem;margin-bottom:0.5rem;">Frontend &amp; Visualization</h4>
+                <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                    <span class="badge badge-neutral">HTML5 &amp; CSS3</span>
+                    <span class="badge badge-primary">Custom SaaS Design Tokens</span>
+                    <span class="badge badge-neutral">Vanilla JavaScript (ES6+)</span>
+                    <span class="badge badge-primary">Chart.js 4</span>
+                    <span class="badge badge-neutral">Lucide Icons</span>
+                    <span class="badge badge-neutral">Google Fonts (Inter)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Responsible AI Statement -->
+    <div id="responsible-ai" class="card" style="margin-bottom: 2.5rem; border-left: 4px solid var(--emerald-500);">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="shield-check" style="width:20px;height:20px;color:var(--emerald-500);"></i>
+                    Responsible &amp; Ethical AI Principles
+                </div>
+            </div>
+        </div>
+        <p style="margin-bottom:1rem;line-height:1.7;">
+            The deployment of predictive algorithms within academic institutions demands strict ethical safeguards:
+        </p>
+        <ul style="color:var(--text-secondary);padding-left:1.5rem;line-height:1.7;">
+            <li><strong>Non-Determinism:</strong> All forecasts represent probabilistic trends with confidence intervals; they never constrain a student's innate intellectual trajectory.</li>
+            <li><strong>Fairness &amp; Non-Discrimination:</strong> Sociodemographic attributes (gender, caste, race, income) are deliberately excluded to safeguard algorithmic fairness.</li>
+            <li><strong>Constructive Focus:</strong> Negative predictions trigger pedagogical support pathways, tutoring suggestions, and revision pacing rather than punitive notifications.</li>
+            <li><strong>Human-in-the-Loop:</strong> Projections serve as decision-support advisory benchmarks for faculty mentors, not automated grading systems.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

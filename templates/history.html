@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Records &amp; History | EduMetrics AI{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2rem;">
+        <div>
+            <span class="badge badge-primary" style="margin-bottom:0.5rem;">Historical Registry</span>
+            <h1 style="font-size:2.2rem;margin-bottom:0.25rem;">Student Prediction Records</h1>
+            <p style="font-size:1rem;color:var(--text-muted);">
+                Search, filter, export, and inspect individualized student performance forecasts.
+            </p>
+        </div>
+        <div style="display:flex;gap:0.75rem;">
+            <a href="{{ url_for('export_csv') }}" class="btn btn-secondary btn-sm" id="history-btn-export">
+                <i data-lucide="download" style="width:15px;height:15px;"></i> Export All (CSV)
+            </a>
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-sm" id="history-btn-new">
+                <i data-lucide="plus" style="width:15px;height:15px;"></i> New Assessment
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter & Search Controls Bar -->
+    <div class="card" style="margin-bottom:2rem;padding:1.25rem;">
+        <form method="GET" action="{{ url_for('history') }}" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+            <!-- Search Query -->
+            <div style="flex:2;min-width:240px;">
+                <div class="input-wrapper">
+                    <span class="input-icon"><i data-lucide="search" style="width:16px;height:16px;"></i></span>
+                    <input type="text" name="search" value="{{ search or '' }}" placeholder="Search by student name or roll ID..." class="form-control with-icon" id="search-input">
+                </div>
+            </div>
+
+            <!-- Performance Tier Filter -->
+            <div style="flex:1;min-width:180px;">
+                <select name="category" class="form-control" id="category-filter" onchange="this.form.submit()">
+                    <option value="all" {% if not category or category == 'all' %}selected{% endif %}>All Performance Tiers</option>
+                    <option value="Distinction" {% if category == 'Distinction' %}selected{% endif %}>Distinction (85-100)</option>
+                    <option value="First Class" {% if category == 'First Class' %}selected{% endif %}>First Class (70-84)</option>
+                    <option value="Second Class" {% if category == 'Second Class' %}selected{% endif %}>Second Class (50-69)</option>
+                    <option value="At Risk" {% if category == 'At Risk' %}selected{% endif %}>At Risk (&lt;50)</option>
+                </select>
+            </div>
+
+            <!-- Sort By -->
+            <div style="flex:1;min-width:180px;">
+                <select name="sort_by" class="form-control" id="sort-by-select" onchange="this.form.submit()">
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>Sort: Most Recent</option>
+                    <option value="predicted_score" {% if sort_by == 'predicted_score' %}selected{% endif %}>Sort: Predicted Score</option>
+                    <option value="attendance" {% if sort_by == 'attendance' %}selected{% endif %}>Sort: Attendance %</option>
+                    <option value="study_hours" {% if sort_by == 'study_hours' %}selected{% endif %}>Sort: Study Hours</option>
+                    <option value="student_name" {% if sort_by == 'student_name' %}selected{% endif %}>Sort: Student Name</option>
+                </select>
+            </div>
+
+            <!-- Sort Order -->
+            <div style="display:flex;gap:0.5rem;">
+                <select name="order" class="form-control" style="width:110px;" onchange="this.form.submit()">
+                    <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Desc &darr;</option>
+                    <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Asc &uarr;</option>
+                </select>
+
+                <button type="submit" class="btn btn-secondary btn-sm" id="btn-filter-submit">
+                    Filter
+                </button>
+
+                {% if search or (category and category != 'all') %}
+                <a href="{{ url_for('history') }}" class="btn btn-outline btn-sm" title="Clear filters">
+                    <i data-lucide="x" style="width:14px;height:14px;"></i> Reset
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Records Table Card -->
+    <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:1rem 1.5rem;background:var(--bg-subtle);border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:0.88rem;font-weight:600;color:var(--text-secondary);">
+                Showing <strong>{{ records|length }}</strong> of <strong>{{ total_count }}</strong> records
+            </div>
+            {% if total_count > 0 %}
+            <span class="badge badge-primary">SQLite Persistent Storage</span>
+            {% endif %}
+        </div>
+
+        {% if records|length == 0 %}
+        <!-- Empty State -->
+        <div style="text-align:center;padding:4rem 2rem;">
+            <div style="width:56px;height:56px;border-radius:50%;background:var(--bg-subtle);color:var(--text-muted);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <i data-lucide="search-x" style="width:28px;height:28px;"></i>
+            </div>
+            <h3>No Records Match Your Filter</h3>
+            <p style="max-width:400px;margin:0.5rem auto 1.5rem;font-size:0.95rem;color:var(--text-muted);">
+                Try refining your search terms or clearing the performance category filter.
+            </p>
+            <a href="{{ url_for('history') }}" class="btn btn-secondary btn-sm">Clear Filters</a>
+        </div>
+        {% else %}
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Student Profile</th>
+                        <th>Study Hours</th>
+                        <th>Attendance</th>
+                        <th>Prior Marks</th>
+                        <th>Projected Score</th>
+                        <th>Performance Tier</th>
+                        <th>Record Type</th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records %}
+                    <tr id="record-row-{{ r.id }}">
+                        <td style="font-size:0.82rem;color:var(--text-muted);white-space:nowrap;">
+                            {{ r.created_at }}
+                        </td>
+                        <td>
+                            <div style="font-weight:600;color:var(--text-primary);">{{ r.student_name }}</div>
+                            <div style="font-size:0.75rem;font-family:monospace;color:var(--text-muted);">{{ r.student_id }}</div>
+                        </td>
+                        <td>{{ r.study_hours }} hrs/wk</td>
+                        <td>
+                            {% if r.attendance < 75.0 %}
+                            <span style="color:var(--rose-500);font-weight:700;">{{ r.attendance }}%</span>
+                            {% else %}
+                            <span>{{ r.attendance }}%</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ r.previous_score }}</td>
+                        <td>
+                            <div style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;color:var(--text-primary);">
+                                {{ r.predicted_score }}
+                            </div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">
+                                &plusmn;3.1 CI: [{{ r.confidence_lower }} &ndash; {{ r.confidence_upper }}]
+                            </div>
+                        </td>
+                        <td>
+                            {% if r.performance_category == 'Distinction' %}
+                            <span class="badge badge-success">Distinction</span>
+                            {% elif r.performance_category == 'First Class' %}
+                            <span class="badge badge-primary">First Class</span>
+                            {% elif r.performance_category == 'Second Class' %}
+                            <span class="badge badge-warning">Second Class</span>
+                            {% else %}
+                            <span class="badge badge-danger">At Risk</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.is_demo %}
+                            <span class="badge badge-neutral" style="font-size:0.7rem;">Demo</span>
+                            {% else %}
+                            <span class="badge badge-primary" style="font-size:0.7rem;">Verified</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:right;">
+                            <div style="display:inline-flex;gap:0.4rem;">
+                                <a href="{{ url_for('view_report', record_id=r.id) }}" class="btn btn-secondary btn-sm" title="View Printable Assessment Report">
+                                    <i data-lucide="printer" style="width:14px;height:14px;"></i> Report
+                                </a>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="deletePredictionRecord({{ r.id }})" title="Delete Record" style="color:var(--rose-500);">
+                                    <i data-lucide="trash-2" style="width:14px;height:14px;"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if total_pages > 1 %}
+        <div style="padding:1rem 1.5rem;background:var(--bg-surface);border-top:1px solid var(--border-subtle);display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:0.85rem;color:var(--text-muted);">
+                Page {{ current_page }} of {{ total_pages }}
+            </div>
+            <div style="display:flex;gap:0.5rem;">
+                {% if current_page > 1 %}
+                <a href="{{ url_for('history', page=current_page-1, search=search, category=category, sort_by=sort_by, order=sort_order) }}" class="btn btn-secondary btn-sm">
+                    &larr; Previous
+                </a>
+                {% endif %}
+
+                {% if current_page < total_pages %}
+                <a href="{{ url_for('history', page=current_page+1, search=search, category=category, sort_by=sort_by, order=sort_order) }}" class="btn btn-secondary btn-sm">
+                    Next &rarr;
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

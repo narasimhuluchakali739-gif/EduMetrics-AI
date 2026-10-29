@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Report &bull; {{ record.student_name }} ({{ record.student_id }}){% endblock %}
+
+{% block extra_head %}
+<style>
+@media print {
+    .app-navbar, .app-footer, .no-print {
+        display: none !important;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+    .page-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+    .report-sheet {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container" style="max-width: 900px;">
+    <!-- Print Actions Header (Hidden in Print) -->
+    <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;padding:0.75rem 1rem;background:var(--bg-surface);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);">
+        <a href="{{ url_for('history') }}" class="btn btn-secondary btn-sm">
+            <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> Back to History
+        </a>
+        <div style="display:flex;gap:0.5rem;">
+            <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">
+                <i data-lucide="printer" style="width:14px;height:14px;"></i> Print / Save as PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Official Assessment Report Sheet -->
+    <div class="card report-sheet" style="padding: 2.5rem; background: var(--bg-surface);">
+        <!-- Institutional Header -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:1.5rem;border-bottom:2px solid var(--text-primary);margin-bottom:2rem;">
+            <div>
+                <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:800;color:var(--text-primary);letter-spacing:-0.02em;">
+                    EDUMETRICS AI ACADEMIC ADVISORY
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.25rem;">
+                    Center for Educational Machine Learning &amp; Student Success
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Assessment Docket</div>
+                <div style="font-family:monospace;font-size:1rem;font-weight:700;color:var(--primary);">#DOC-{{ record.id }}-{{ record.student_id }}</div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;">Generated: {{ record.created_at }}</div>
+            </div>
+        </div>
+
+        <!-- Student Profile Summary -->
+        <div style="margin-bottom: 2rem;">
+            <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.75rem;">
+                Candidate Academic Profile
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:1rem;padding:1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+                <div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">Student Name</div>
+                    <div style="font-weight:700;font-size:1.05rem;">{{ record.student_name }}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">Roll / Identifier</div>
+                    <div style="font-family:monospace;font-weight:700;">{{ record.student_id }}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">Class Attendance</div>
+                    <div style="font-weight:700;color:{% if record.attendance < 75.0 %}var(--rose-500){% else %}inherit{% endif %};">
+                        {{ record.attendance }}%
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);">Study Volume</div>
+                    <div style="font-weight:700;">{{ record.study_hours }} hrs/wk</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projected Outcome Banner -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:1.5rem;background:linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-subtle) 100%);border:1px solid var(--border-medium);border-radius:var(--radius-md);margin-bottom:2rem;">
+            <div>
+                <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);">Estimated Summative Mark</div>
+                <div style="font-family:var(--font-display);font-size:2.8rem;font-weight:800;color:var(--text-primary);line-height:1.1;">
+                    {{ record.predicted_score }} <span style="font-size:1.2rem;font-weight:500;color:var(--text-muted);">/ 100</span>
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-muted);margin-top:0.25rem;">
+                    Estimated 90% Confidence Range: [{{ record.confidence_lower }} &ndash; {{ record.confidence_upper }} marks]
+                </div>
+            </div>
+
+            <div style="text-align:right;">
+                <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem;">Performance Tier</div>
+                {% if record.performance_category == 'Distinction' %}
+                <span class="badge badge-success" style="font-size:1rem;padding:0.4rem 1rem;">Distinction (Exemplary)</span>
+                {% elif record.performance_category == 'First Class' %}
+                <span class="badge badge-primary" style="font-size:1rem;padding:0.4rem 1rem;">First Class (Proficient)</span>
+                {% elif record.performance_category == 'Second Class' %}
+                <span class="badge badge-warning" style="font-size:1rem;padding:0.4rem 1rem;">Second Class (Satisfactory)</span>
+                {% else %}
+                <span class="badge badge-danger" style="font-size:1rem;padding:0.4rem 1rem;">Academic Risk (Intervention Needed)</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Academic Inputs Breakdown Table -->
+        <div style="margin-bottom: 2rem;">
+            <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.75rem;">
+                Evaluated Input Indicators
+            </div>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Student Value</th>
+                        <th>Cohort Reference Median</th>
+                        <th>Pedagogical Implication</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Weekly Study Hours</strong></td>
+                        <td>{{ record.study_hours }} hrs/wk</td>
+                        <td>21.0 hrs/wk</td>
+                        <td>Revision habit volume</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Attendance Rate</strong></td>
+                        <td>
+                            {{ record.attendance }}%
+                            {% if record.attendance < 75.0 %}
+                            <span class="badge badge-danger" style="margin-left:0.4rem;">Below 75% Rule</span>
+                            {% endif %}
+                        </td>
+                        <td>76.9%</td>
+                        <td>Coursework &amp; lecture presence</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prior Examination Marks</strong></td>
+                        <td>{{ record.previous_score }}</td>
+                        <td>76.1</td>
+                        <td>Historical baseline cognitive anchor</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Continuous Assignment Marks</strong></td>
+                        <td>{{ record.assignment_score }}</td>
+                        <td>100.0</td>
+                        <td>Practical application mastery</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Average Sleep</strong></td>
+                        <td>{{ record.sleep_hours }} hrs/day</td>
+                        <td>7.8 hrs/day</td>
+                        <td>Cognitive rest &amp; focus stamina</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tutoring / Mentoring Sessions</strong></td>
+                        <td>{{ record.tutoring_sessions }} sessions/mo</td>
+                        <td>2.0 sessions/mo</td>
+                        <td>Targeted module remediation</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Actionable Recommendations -->
+        {% if record.recommendations and record.recommendations|length > 0 %}
+        <div style="margin-bottom: 2rem;">
+            <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);margin-bottom:0.75rem;">
+                Strategic Advisory &amp; Action Plan
+            </div>
+            {% for rec in record.recommendations %}
+            <div class="rec-item {{ rec.type }}" style="margin-bottom:0.75rem;">
+                <div class="rec-title">
+                    <span class="badge badge-neutral">{{ rec.badge }}</span>
+                    <span>{{ rec.title }}</span>
+                </div>
+                <div style="font-size:0.88rem;color:var(--text-secondary);">{{ rec.text }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Advisor Signature and Verification -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem;padding-top:1.5rem;border-top:1px dashed var(--border-medium);">
+            <div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:2.5rem;">Academic Advisor Sign-off:</div>
+                <div style="border-bottom:1px solid var(--text-primary);width:80%;"></div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">Faculty Advisor / Mentor Signature</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:2.5rem;">Institutional Seal &amp; Verification:</div>
+                <div style="border-bottom:1px solid var(--text-primary);width:80%;"></div>
+                <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.25rem;">Department of Academic Analytics</div>
+            </div>
+        </div>
+
+        <!-- Ethical AI Footnote -->
+        <div style="margin-top:2.5rem;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:0.72rem;color:var(--text-muted);line-height:1.4;">
+            <strong>Responsible AI Disclosure:</strong> This document reflects algorithmic regression estimates produced by EduMetrics AI. These findings serve as pedagogical benchmarks to support student growth and must not be used as sole criteria for grading, disciplinary actions, or academic dismissal.
+        </div>
+    </div>
+</div>
+{% endblock %}

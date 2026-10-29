@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Model Architecture &amp; Transparency | EduMetrics AI{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div style="max-width: 900px; margin: 0 auto 3rem; text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom:0.75rem;">Machine Learning Transparency</span>
+        <h1 style="font-size:2.25rem;margin-bottom:0.5rem;">Model Specifications &amp; Methodology</h1>
+        <p style="font-size:1.05rem;color:var(--text-muted);">
+            Transparent audit of algorithms, cross-validation metrics, feature attribution methodologies, and responsible AI guardrails.
+        </p>
+    </div>
+
+    <!-- Champion Model Specifications Card -->
+    <div class="card" style="margin-bottom: 2.5rem; border-left: 4px solid var(--primary);">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem;">
+            <div>
+                <span class="badge badge-success" style="margin-bottom:0.4rem;">Production Champion</span>
+                <h2 style="font-size:1.6rem;margin-bottom:0.2rem;">Gradient Boosting Regressor</h2>
+                <div style="font-size:0.85rem;color:var(--text-muted);">
+                    Trained: {{ metadata.trained_at if metadata else '2026-10-29' }} &bull; Scikit-Learn Pipeline
+                </div>
+            </div>
+            <div style="display:flex;gap:1.5rem;">
+                <div style="text-align:right;">
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">Holdout Test R²</div>
+                    <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--primary);">
+                        {{ metadata.champion_metrics.test_r2|round(4) if metadata else '0.9219' }}
+                    </div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:0.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;">5-Fold CV R²</div>
+                    <div style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--emerald-500);">
+                        {{ metadata.champion_metrics.cv_r2_mean|round(4) if metadata else '0.9248' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1rem;padding:1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+            <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Root Mean Squared Error</div>
+                <div style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">&plusmn;{{ metadata.champion_metrics.test_rmse|round(3) if metadata else '3.058' }} marks</div>
+            </div>
+            <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Mean Absolute Error</div>
+                <div style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">{{ metadata.champion_metrics.test_mae|round(3) if metadata else '2.415' }} marks</div>
+            </div>
+            <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Training / Test Split</div>
+                <div style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">2,000 / 500 (80/20)</div>
+            </div>
+            <div>
+                <div style="font-size:0.75rem;color:var(--text-muted);">Cross-Validation Folds</div>
+                <div style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">5-Fold Stratified K-Fold</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Algorithm Benchmark Table -->
+    <div id="benchmarks" class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="award" style="width:18px;height:18px;color:var(--primary);"></i>
+                    Model Benchmark Evaluation Comparison
+                </div>
+                <div class="card-subtitle">Empirical performance across 4 candidate scikit-learn regression pipelines</div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Algorithm</th>
+                        <th>Type</th>
+                        <th>Test R² Score</th>
+                        <th>5-Fold CV Mean R² (&plusmn;Std)</th>
+                        <th>MAE (Marks)</th>
+                        <th>RMSE (Marks)</th>
+                        <th>Production Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background:var(--primary-light);">
+                        <td><strong>Gradient Boosting</strong></td>
+                        <td>Ensemble Decision Trees</td>
+                        <td><strong style="color:var(--primary);">0.9219</strong></td>
+                        <td>0.9248 (&plusmn;0.0020)</td>
+                        <td>2.415</td>
+                        <td>3.058</td>
+                        <td><span class="badge badge-success">Selected Champion</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Random Forest</strong></td>
+                        <td>Bagging Ensemble Trees</td>
+                        <td>0.9056</td>
+                        <td>0.9158 (&plusmn;0.0019)</td>
+                        <td>2.660</td>
+                        <td>3.362</td>
+                        <td><span class="badge badge-neutral">Candidate</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ridge Regression</strong></td>
+                        <td>L2 Regularized Linear</td>
+                        <td>0.9012</td>
+                        <td>0.9109 (&plusmn;0.0058)</td>
+                        <td>2.758</td>
+                        <td>3.439</td>
+                        <td><span class="badge badge-neutral">Baseline</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linear Regression</strong></td>
+                        <td>Ordinary Least Squares</td>
+                        <td>0.9012</td>
+                        <td>0.9109 (&plusmn;0.0058)</td>
+                        <td>2.758</td>
+                        <td>3.439</td>
+                        <td><span class="badge badge-neutral">Baseline</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Feature Schema & Weights -->
+    <div id="feature-weights" class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="sliders" style="width:18px;height:18px;color:var(--primary);"></i>
+                    Feature Attribution &amp; Statistical Grounding
+                </div>
+                <div class="card-subtitle">Calculated feature importance from the ensemble trees</div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Metric Type</th>
+                        <th>Valid Range</th>
+                        <th>Relative Weight</th>
+                        <th>Pedagogical Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Attendance Rate</strong></td>
+                        <td>Percentage</td>
+                        <td>50.0 &ndash; 100.0%</td>
+                        <td><span class="badge badge-primary">33.4%</span></td>
+                        <td>Direct exposure to instruction and laboratory demonstration; penalizes &lt;75% presence.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assignment Score</strong></td>
+                        <td>Continuous Marks</td>
+                        <td>40.0 &ndash; 100.0</td>
+                        <td><span class="badge badge-primary">27.4%</span></td>
+                        <td>Continuous assessment performance and regular coursework completion habits.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Previous Exam Score</strong></td>
+                        <td>Continuous Marks</td>
+                        <td>35.0 &ndash; 100.0</td>
+                        <td><span class="badge badge-primary">18.7%</span></td>
+                        <td>Cognitive foundation and prior module mastery acting as an anchoring covariate.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Study Hours / Week</strong></td>
+                        <td>Hours (Continuous)</td>
+                        <td>5.0 &ndash; 45.0 hrs</td>
+                        <td><span class="badge badge-primary">17.0%</span></td>
+                        <td>Independent problem-solving repetition; incorporates diminishing marginal returns.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tutoring Sessions</strong></td>
+                        <td>Count (Integer)</td>
+                        <td>0 &ndash; 8 sessions/mo</td>
+                        <td><span class="badge badge-neutral">2.3%</span></td>
+                        <td>Supplemental faculty mentoring and peer tutoring interventions.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sleep Hours / Day</strong></td>
+                        <td>Hours (Continuous)</td>
+                        <td>4.0 &ndash; 10.0 hrs</td>
+                        <td><span class="badge badge-neutral">1.3%</span></td>
+                        <td>Neurocognitive rest; captures fatigue degradation when &lt;6 hours.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Dataset & Model Limitations -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-header">
+            <div>
+                <div class="card-title">
+                    <i data-lucide="shield-alert" style="width:18px;height:18px;color:var(--amber-500);"></i>
+                    Model Limitations &amp; Dataset Scope
+                </div>
+                <div class="card-subtitle">Technical documentation of constraints and boundary conditions</div>
+            </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+            <div style="padding:1rem 1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border-left:4px solid var(--amber-500);">
+                <div style="font-weight:700;margin-bottom:0.25rem;color:var(--text-primary);">Synthetic Cohort Disclaimer</div>
+                <p style="font-size:0.9rem;margin:0;">
+                    The model was trained on a synthesized benchmark cohort (N=2,500) incorporating non-linear functions established in educational data mining literature. While realistic, predictions demonstrate software engineering and statistical workflows rather than definitive medical or clinical certainty.
+                </p>
+            </div>
+
+            <div style="padding:1rem 1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border-left:4px solid var(--primary);">
+                <div style="font-weight:700;margin-bottom:0.25rem;color:var(--text-primary);">Omitted Qualitative Variables</div>
+                <p style="font-size:0.9rem;margin:0;">
+                    The feature set strictly excludes sensitive demographic and socioeconomic variables (gender, ethnicity, household income, geographic location) to prevent institutional demographic bias. Important unmeasured qualitative factors such as sudden personal illness, examination anxiety, or family emergencies cannot be captured by the regression model.
+                </p>
+            </div>
+
+            <div style="padding:1rem 1.25rem;background:var(--bg-subtle);border-radius:var(--radius-sm);border-left:4px solid var(--emerald-500);">
+                <div style="font-weight:700;margin-bottom:0.25rem;color:var(--text-primary);">Uncertainty &amp; Confidence Interval Reporting</div>
+                <p style="font-size:0.9rem;margin:0;">
+                    To protect students from deterministic assumptions, all predictions provide explicit 90% confidence bands based on residual root mean squared variance (&plusmn;3.1 marks on a 100-point scale).
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

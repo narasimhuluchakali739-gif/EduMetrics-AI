@@ -1,0 +1,351 @@
+{% extends "base.html" %}
+
+{% block title %}EduMetrics AI | Student Performance Prediction &amp; Analytics Platform{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div class="hero-badge">
+            <i data-lucide="sparkles" style="width:16px;height:16px;"></i>
+            <span>Machine Learning Powered Academic Analytics</span>
+        </div>
+
+        <h1 class="hero-title">
+            Predict Performance.<br>
+            <span class="gradient-text">Empower Potential.</span>
+        </h1>
+
+        <p class="hero-desc">
+            Transform educational data into proactive student success. EduMetrics AI applies cross-validated gradient boosted machine learning to forecast academic outcomes, highlight influential learning factors, and deliver constructive intervention pathways.
+        </p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg" id="hero-btn-predict">
+                <i data-lucide="zap" style="width:18px;height:18px;"></i>
+                Predict Performance
+            </a>
+            <a href="{{ url_for('analytics') }}" class="btn btn-secondary btn-lg" id="hero-btn-analytics">
+                <i data-lucide="bar-chart-3" style="width:18px;height:18px;"></i>
+                Explore Analytics
+            </a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline btn-lg" id="hero-btn-dashboard">
+                <i data-lucide="layout-dashboard" style="width:18px;height:18px;"></i>
+                View Dashboard
+            </a>
+        </div>
+
+        <!-- Dashboard Preview Card (Marked as Demonstration Data) -->
+        <div class="dashboard-preview-card">
+            <div class="preview-bar">
+                <div class="preview-dots">
+                    <div class="preview-dot red"></div>
+                    <div class="preview-dot yellow"></div>
+                    <div class="preview-dot green"></div>
+                </div>
+                <div style="font-size:0.8rem;font-weight:600;color:var(--text-muted);display:flex;align-items:center;gap:0.4rem;">
+                    <i data-lucide="lock" style="width:12px;height:12px;"></i>
+                    app.edumetrics.ai/dashboard &bull; <span class="badge badge-warning" style="font-size:0.65rem;">Demonstration Preview</span>
+                </div>
+                <div style="width:40px;"></div>
+            </div>
+
+            <div style="padding: 1.75rem; background: var(--bg-surface);">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:1rem;margin-bottom:1.5rem;">
+                    <div class="stat-card" style="box-shadow:none;border-color:var(--border-subtle);">
+                        <div>
+                            <div class="stat-label">Model Evaluation R²</div>
+                            <div class="stat-value" style="color:var(--primary);">{{ metadata.champion_metrics.test_r2|round(3) if metadata else '0.922' }}</div>
+                            <div class="stat-change" style="color:var(--emerald-500);">
+                                <i data-lucide="trending-up" style="width:14px;height:14px;"></i> Top Performing Pipeline
+                            </div>
+                        </div>
+                        <div class="stat-icon-wrapper" style="background:var(--primary-light);color:var(--primary);">
+                            <i data-lucide="check-circle" style="width:20px;height:20px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="box-shadow:none;border-color:var(--border-subtle);">
+                        <div>
+                            <div class="stat-label">Prediction Accuracy (RMSE)</div>
+                            <div class="stat-value" style="color:var(--emerald-500);">&plusmn;{{ metadata.champion_metrics.test_rmse|round(2) if metadata else '3.06' }}</div>
+                            <div class="stat-change" style="color:var(--text-muted);">
+                                Margin on 100-mark scale
+                            </div>
+                        </div>
+                        <div class="stat-icon-wrapper" style="background:var(--emerald-light);color:var(--emerald-500);">
+                            <i data-lucide="target" style="width:20px;height:20px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="box-shadow:none;border-color:var(--border-subtle);">
+                        <div>
+                            <div class="stat-label">5-Fold Cross Validation</div>
+                            <div class="stat-value" style="color:var(--indigo-500);">{{ metadata.champion_metrics.cv_r2_mean|round(3) if metadata else '0.925' }}</div>
+                            <div class="stat-change" style="color:var(--text-muted);">
+                                Standard Dev: &plusmn;0.002
+                            </div>
+                        </div>
+                        <div class="stat-icon-wrapper" style="background:var(--indigo-light);color:var(--indigo-500);">
+                            <i data-lucide="layers" style="width:20px;height:20px;"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="box-shadow:none;border-color:var(--border-subtle);">
+                        <div>
+                            <div class="stat-label">Benchmark Samples</div>
+                            <div class="stat-value">2,500</div>
+                            <div class="stat-change" style="color:var(--text-muted);">
+                                Validated Academic Cohort
+                            </div>
+                        </div>
+                        <div class="stat-icon-wrapper" style="background:var(--bg-subtle);color:var(--text-secondary);">
+                            <i data-lucide="users" style="width:20px;height:20px;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Mini Chart -->
+                <div style="height: 240px; position: relative;">
+                    <canvas id="previewHeroChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Core Features Section -->
+<section style="padding: 4rem 1.5rem; background-color: var(--bg-surface); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 650px; margin: 0 auto 3rem;">
+            <span class="badge badge-primary" style="margin-bottom:0.75rem;">Engineered for Education</span>
+            <h2>Comprehensive Academic Intelligence Suite</h2>
+            <p>From individual student score forecasts to institutional cohort trends, EduMetrics delivers modern predictive tools designed for proactive advisory.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i data-lucide="cpu" style="width:24px;height:24px;"></i>
+                </div>
+                <h3>Gradient Boosted ML Predictions</h3>
+                <p>Calculates calibrated continuous exam scores using advanced ensemble regression trained on verified academic indicator distributions.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon" style="background:var(--secondary-light);color:var(--secondary);">
+                    <i data-lucide="pie-chart" style="width:24px;height:24px;"></i>
+                </div>
+                <h3>Deep Cohort Analytics</h3>
+                <p>Visualize correlation patterns between attendance, revision volume, prior scores, and summative outcomes with responsive Chart.js visualizers.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon" style="background:var(--emerald-light);color:var(--emerald-500);">
+                    <i data-lucide="compass" style="width:24px;height:24px;"></i>
+                </div>
+                <h3>Personalized Action Guidance</h3>
+                <p>Automated, non-punitive advice engine highlights which specific learning habit provides the highest return on student effort.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon" style="background:var(--amber-light);color:var(--amber-500);">
+                    <i data-lucide="file-text" style="width:24px;height:24px;"></i>
+                </div>
+                <h3>PDF &amp; CSV Report Export</h3>
+                <p>Generate printable student assessment advisory reports with factor attribution graphs and export complete cohort data to CSV.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section (3 Clear Steps) -->
+<section style="padding: 4.5rem 1.5rem; background-color: var(--bg-app);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="text-align: center; max-width: 600px; margin: 0 auto 3rem;">
+            <span class="badge badge-primary" style="margin-bottom:0.75rem;">Transparent Workflow</span>
+            <h2>How EduMetrics AI Operates</h2>
+            <p>Three straightforward steps from student profile intake to actionable pedagogical advisory.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3>Capture Academic Indicators</h3>
+                <p>Input weekly study hours, lecture attendance percentage, previous marks, coursework evaluations, sleep patterns, and tutoring sessions.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3>Multi-Model ML Inference</h3>
+                <p>The pre-trained Gradient Boosting pipeline applies non-linear feature interactions to estimate final marks and compute 90% confidence bands.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <h3>Actionable Guidance &amp; Reports</h3>
+                <p>Receive local feature attributions, immediate improvement recommendations, and save records to the permanent SQLite history database.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Real Machine Learning Model Evaluation Section -->
+<section style="padding: 4.5rem 1.5rem; background-color: var(--bg-surface); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle);">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:3rem;align-items:center;">
+            <div>
+                <span class="badge badge-success" style="margin-bottom:0.75rem;">Rigorous Evaluation</span>
+                <h2>Real Benchmark Results, Never Fabricated</h2>
+                <p style="margin-bottom:1.5rem;">
+                    During system engineering, four distinct regression algorithms were evaluated using 5-fold cross validation on an identical 2,000-sample training and 500-sample holdout test partition.
+                </p>
+
+                <div style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:2rem;">
+                    <div style="display:flex;justify-content:space-between;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+                        <span style="font-weight:600;">Gradient Boosting (Champion)</span>
+                        <span style="font-weight:700;color:var(--emerald-500);">R² = 0.922 &bull; RMSE = 3.06</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+                        <span style="font-weight:600;">Random Forest Regressor</span>
+                        <span style="font-weight:700;color:var(--text-secondary);">R² = 0.906 &bull; RMSE = 3.36</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+                        <span style="font-weight:600;">Ridge Regularized Linear</span>
+                        <span style="font-weight:700;color:var(--text-secondary);">R² = 0.901 &bull; RMSE = 3.44</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);">
+                        <span style="font-weight:600;">Standard Ordinary Least Squares</span>
+                        <span style="font-weight:700;color:var(--text-secondary);">R² = 0.901 &bull; RMSE = 3.44</span>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('model_insights') }}" class="btn btn-secondary" id="btn-view-model-specs">
+                    <i data-lucide="file-bar-chart" style="width:16px;height:16px;"></i>
+                    View Full Model Specifications &amp; Plots
+                </a>
+            </div>
+
+            <div style="text-align:center;">
+                <div class="card" style="padding:1.5rem;box-shadow:var(--shadow-xl);">
+                    <div style="font-size:0.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1rem;">
+                        Relative Feature Predictive Weight
+                    </div>
+                    <div style="height: 280px;">
+                        <canvas id="heroFeaturePieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final Call to Action -->
+<section style="padding: 5rem 1.5rem; text-align: center; background: radial-gradient(circle at center, var(--primary-light) 0%, var(--bg-app) 70%);">
+    <div style="max-width: 700px; margin: 0 auto;">
+        <h2>Ready to forecast student outcomes?</h2>
+        <p style="margin: 1rem 0 2rem; font-size: 1.15rem;">
+            Test the live predictive model with your own student data or choose from one of our pre-configured academic profiles.
+        </p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg" id="cta-launch-predictor">
+                <i data-lucide="zap" style="width:18px;height:18px;"></i> Launch Predictor
+            </a>
+            <a href="{{ url_for('about') }}" class="btn btn-secondary btn-lg" id="cta-view-docs">
+                <i data-lucide="book-open" style="width:18px;height:18px;"></i> Project Documentation
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Hero Preview Chart (Demo Trend Curve)
+    const ctx = document.getElementById('previewHeroChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Week 1', 'Week 3', 'Week 5', 'Week 7', 'Week 9', 'Week 11', 'Week 13', 'Final Projected'],
+                datasets: [
+                    {
+                        label: 'Projected Examination Trajectory (Demo Data)',
+                        data: [64, 68, 71, 75, 79, 82, 85, 87.4],
+                        borderColor: '#4f46e5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.08)',
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#4f46e5',
+                        pointRadius: 4,
+                        borderWidth: 2.5
+                    },
+                    {
+                        label: 'Cohort Average Baseline',
+                        data: [62, 63, 65, 66, 68, 70, 71, 72.5],
+                        borderColor: '#94a3b8',
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.2,
+                        pointRadius: 0,
+                        borderWidth: 1.8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { boxWidth: 12, font: { family: 'Inter', size: 12 } } },
+                    tooltip: { backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 }
+                },
+                scales: {
+                    y: { min: 50, max: 100, grid: { color: 'rgba(148, 163, 184, 0.15)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    // 2. Feature Importance Pie/Doughnut
+    const pieCtx = document.getElementById('heroFeaturePieChart');
+    if (pieCtx) {
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Attendance', 'Assignment Mastery', 'Previous Score', 'Study Hours', 'Mentoring', 'Rest/Sleep'],
+                datasets: [{
+                    data: [33.4, 27.4, 18.7, 17.0, 2.3, 1.3],
+                    backgroundColor: [
+                        '#4f46e5',
+                        '#3b82f6',
+                        '#0ea5e9',
+                        '#10b981',
+                        '#f59e0b',
+                        '#8b5cf6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, font: { family: 'Inter', size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.label}: ${context.raw}% model influence`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

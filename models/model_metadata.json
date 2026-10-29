@@ -1,0 +1,212 @@
+{
+  "model_name": "Gradient Boosting",
+  "champion_algorithm": "GradientBoostingRegressor",
+  "trained_at": "2026-10-29 12:39:53",
+  "training_samples": 2000,
+  "test_samples": 500,
+  "features": [
+    "study_hours",
+    "attendance",
+    "previous_score",
+    "assignment_score",
+    "sleep_hours",
+    "tutoring_sessions"
+  ],
+  "feature_definitions": {
+    "study_hours": {
+      "label": "Study Hours per Week",
+      "description": "Weekly dedicated academic study and revision time (hours).",
+      "min": 5.0,
+      "max": 45.0,
+      "step": 0.5,
+      "unit": "hrs/wk",
+      "default": 20.0
+    },
+    "attendance": {
+      "label": "Attendance Rate",
+      "description": "Percentage of lecture and lab classes attended.",
+      "min": 50.0,
+      "max": 100.0,
+      "step": 1.0,
+      "unit": "%",
+      "default": 85.0
+    },
+    "previous_score": {
+      "label": "Previous Exam Score",
+      "description": "Score achieved in the previous semester or mid-term examination.",
+      "min": 35.0,
+      "max": 100.0,
+      "step": 0.5,
+      "unit": "marks",
+      "default": 72.0
+    },
+    "assignment_score": {
+      "label": "Assignment Completion Score",
+      "description": "Average marks across continuous assessments and lab assignments.",
+      "min": 40.0,
+      "max": 100.0,
+      "step": 0.5,
+      "unit": "marks",
+      "default": 78.0
+    },
+    "sleep_hours": {
+      "label": "Average Sleep Duration",
+      "description": "Average daily rest and sleep time (hours).",
+      "min": 4.0,
+      "max": 10.0,
+      "step": 0.5,
+      "unit": "hrs/day",
+      "default": 7.5
+    },
+    "tutoring_sessions": {
+      "label": "Tutoring / Mentoring Sessions",
+      "description": "Number of academic mentoring or peer-tutoring sessions attended per month.",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "sessions/mo",
+      "default": 2
+    }
+  },
+  "target": "final_score",
+  "categories": [
+    {
+      "name": "Distinction",
+      "min": 85.0,
+      "max": 100.0,
+      "color": "emerald",
+      "badge": "success"
+    },
+    {
+      "name": "First Class",
+      "min": 70.0,
+      "max": 84.99,
+      "color": "indigo",
+      "badge": "primary"
+    },
+    {
+      "name": "Second Class",
+      "min": 50.0,
+      "max": 69.99,
+      "color": "amber",
+      "badge": "warning"
+    },
+    {
+      "name": "At Risk",
+      "min": 0.0,
+      "max": 49.99,
+      "color": "rose",
+      "badge": "danger"
+    }
+  ],
+  "benchmark_comparison": {
+    "Linear Regression": {
+      "cv_r2_mean": 0.9109056382258629,
+      "cv_r2_std": 0.005797482016830705,
+      "test_r2": 0.9011787112656118,
+      "test_mae": 2.7579900036456295,
+      "test_rmse": 3.438970021087749
+    },
+    "Ridge Regression": {
+      "cv_r2_mean": 0.9109062864211095,
+      "cv_r2_std": 0.005793068416365241,
+      "test_r2": 0.9011703038688298,
+      "test_mae": 2.7580263026101473,
+      "test_rmse": 3.4391163062198977
+    },
+    "Random Forest": {
+      "cv_r2_mean": 0.9158466975136841,
+      "cv_r2_std": 0.0018519199268875106,
+      "test_r2": 0.9055721875007319,
+      "test_mae": 2.6604000812910917,
+      "test_rmse": 3.3616546685771507
+    },
+    "Gradient Boosting": {
+      "cv_r2_mean": 0.9247501330764054,
+      "cv_r2_std": 0.002031603850677418,
+      "test_r2": 0.9218754192537895,
+      "test_mae": 2.4145301628041382,
+      "test_rmse": 3.057714855059369
+    }
+  },
+  "champion_metrics": {
+    "cv_r2_mean": 0.9247501330764054,
+    "cv_r2_std": 0.002031603850677418,
+    "test_r2": 0.9218754192537895,
+    "test_mae": 2.4145301628041382,
+    "test_rmse": 3.057714855059369
+  },
+  "feature_importance": {
+    "attendance": 0.3339862426522598,
+    "assignment_score": 0.2735811124076823,
+    "previous_score": 0.18682500041489283,
+    "study_hours": 0.16964703607058665,
+    "tutoring_sessions": 0.02260308248518317,
+    "sleep_hours": 0.013357525969395087
+  },
+  "dataset_statistics": {
+    "study_hours": {
+      "mean": 20.79744,
+      "std": 5.352492981671955,
+      "min": 5.0,
+      "max": 41.1,
+      "median": 21.0,
+      "q25": 17.1,
+      "q75": 24.4
+    },
+    "attendance": {
+      "mean": 76.75176,
+      "std": 8.055252928511736,
+      "min": 50.0,
+      "max": 100.0,
+      "median": 76.9,
+      "q25": 71.5,
+      "q75": 82.2
+    },
+    "previous_score": {
+      "mean": 75.34636,
+      "std": 10.877926386190769,
+      "min": 41.2,
+      "max": 98.7,
+      "median": 76.1,
+      "q25": 68.0,
+      "q75": 83.8
+    },
+    "assignment_score": {
+      "mean": 97.16236,
+      "std": 4.871821947694313,
+      "min": 69.3,
+      "max": 100.0,
+      "median": 100.0,
+      "q25": 96.0,
+      "q75": 100.0
+    },
+    "sleep_hours": {
+      "mean": 7.8244,
+      "std": 0.938222118849113,
+      "min": 4.3,
+      "max": 10.0,
+      "median": 7.8,
+      "q25": 7.2,
+      "q75": 8.5
+    },
+    "tutoring_sessions": {
+      "mean": 2.5028,
+      "std": 1.6392275579658604,
+      "min": 0.0,
+      "max": 8.0,
+      "median": 2.0,
+      "q25": 1.0,
+      "q75": 3.0
+    },
+    "final_score": {
+      "mean": 83.72348000000001,
+      "std": 11.016166804384582,
+      "min": 39.2,
+      "max": 100.0,
+      "median": 85.4,
+      "q25": 77.5,
+      "q75": 91.825
+    }
+  }
+}

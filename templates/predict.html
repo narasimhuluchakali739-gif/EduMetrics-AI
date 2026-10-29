@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block title %}Predict Student Performance | EduMetrics AI{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Header -->
+    <div style="max-width: 900px; margin: 0 auto 2.5rem; text-align: center;">
+        <span class="badge badge-primary" style="margin-bottom:0.75rem;">AI Inference Studio</span>
+        <h1 style="font-size:2.25rem;margin-bottom:0.5rem;">Student Examination Performance Predictor</h1>
+        <p style="font-size:1.05rem;color:var(--text-muted);">
+            Input academic indicators to evaluate projected summative performance with confidence bounds and personalized improvement strategies.
+        </p>
+    </div>
+
+    <!-- Quick Preset Profiles Banner -->
+    <div class="card" style="max-width: 1100px; margin: 0 auto 2rem; background: var(--bg-surface); padding: 1.25rem 1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+            <div style="display:flex;align-items:center;gap:0.6rem;">
+                <i data-lucide="sparkles" style="width:18px;height:18px;color:var(--primary);"></i>
+                <span style="font-weight:700;font-size:0.92rem;">Quick Test Profiles:</span>
+                <span style="font-size:0.85rem;color:var(--text-muted);">Populate form instantly for fast demonstration</span>
+            </div>
+            <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="applyPresetProfile('high_achiever')" id="btn-preset-high">
+                    <span style="width:8px;height:8px;border-radius:50%;background:var(--emerald-500);display:inline-block;"></span>
+                    High Achiever
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="applyPresetProfile('balanced')" id="btn-preset-balanced">
+                    <span style="width:8px;height:8px;border-radius:50%;background:var(--indigo-500);display:inline-block;"></span>
+                    Balanced Student
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="applyPresetProfile('borderline')" id="btn-preset-borderline">
+                    <span style="width:8px;height:8px;border-radius:50%;background:var(--amber-500);display:inline-block;"></span>
+                    Borderline
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="applyPresetProfile('at_risk')" id="btn-preset-risk">
+                    <span style="width:8px;height:8px;border-radius:50%;background:var(--rose-500);display:inline-block;"></span>
+                    At Risk
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Form & Result Container Grid -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(460px, 1fr));gap:2rem;max-width:1100px;margin:0 auto;">
+        
+        <!-- Prediction Input Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="card-title">
+                        <i data-lucide="clipboard-list" style="width:20px;height:20px;color:var(--primary);"></i>
+                        Academic Input Parameters
+                    </div>
+                    <div class="card-subtitle">Adjust indicators using sliders or direct numeric entry</div>
+                </div>
+            </div>
+
+            <form id="prediction-form" onsubmit="handlePredictionSubmit(event)">
+                <!-- Section 1: Student Identifier -->
+                <div style="margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border-subtle);">
+                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;letter-spacing:0.05em;">
+                        1. Student Identification
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="student_id">Student Roll / ID *</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon"><i data-lucide="hash" style="width:16px;height:16px;"></i></span>
+                                <input type="text" id="student_id" name="student_id" class="form-control with-icon" value="STU-2026-880" required>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="student_name">Student Name</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon"><i data-lucide="user" style="width:16px;height:16px;"></i></span>
+                                <input type="text" id="student_name" name="student_name" class="form-control with-icon" value="Devika Verma" placeholder="Optional Name">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Study & Attendance -->
+                <div style="margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border-subtle);">
+                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;letter-spacing:0.05em;">
+                        2. Academic Dedication &amp; Attendance
+                    </div>
+
+                    <!-- Study Hours -->
+                    <div class="form-group">
+                        <label class="form-label" for="study_hours">
+                            <span>Study Hours per Week</span>
+                            <span class="form-hint">Range: 5 &ndash; 45 hrs</span>
+                        </label>
+                        <div class="range-input-wrapper">
+                            <input type="range" id="study_hours_slider" min="5.0" max="45.0" step="0.5" value="22.5" class="range-slider">
+                            <input type="number" id="study_hours" name="study_hours" min="5.0" max="45.0" step="0.5" value="22.5" class="form-control range-number-box" required>
+                        </div>
+                    </div>
+
+                    <!-- Attendance -->
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="attendance">
+                            <span>Classroom &amp; Lab Attendance (%)</span>
+                            <span class="form-hint">Threshold: 75% Institutional</span>
+                        </label>
+                        <div class="range-input-wrapper">
+                            <input type="range" id="attendance_slider" min="50.0" max="100.0" step="1.0" value="84.0" class="range-slider">
+                            <input type="number" id="attendance" name="attendance" min="50.0" max="100.0" step="1.0" value="84.0" class="form-control range-number-box" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Assessment History -->
+                <div style="margin-bottom:1.5rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border-subtle);">
+                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;letter-spacing:0.05em;">
+                        3. Prior &amp; Continuous Academic Scores
+                    </div>
+
+                    <!-- Previous Score -->
+                    <div class="form-group">
+                        <label class="form-label" for="previous_score">
+                            <span>Previous Semester / Mid-Term Marks</span>
+                            <span class="form-hint">Range: 35 &ndash; 100</span>
+                        </label>
+                        <div class="range-input-wrapper">
+                            <input type="range" id="previous_score_slider" min="35.0" max="100.0" step="0.5" value="76.0" class="range-slider">
+                            <input type="number" id="previous_score" name="previous_score" min="35.0" max="100.0" step="0.5" value="76.0" class="form-control range-number-box" required>
+                        </div>
+                    </div>
+
+                    <!-- Assignment Score -->
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label" for="assignment_score">
+                            <span>Assignment &amp; Coursework Mastery</span>
+                            <span class="form-hint">Range: 40 &ndash; 100</span>
+                        </label>
+                        <div class="range-input-wrapper">
+                            <input type="range" id="assignment_score_slider" min="40.0" max="100.0" step="0.5" value="86.0" class="range-slider">
+                            <input type="number" id="assignment_score" name="assignment_score" min="40.0" max="100.0" step="0.5" value="86.0" class="form-control range-number-box" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Wellness & Mentorship -->
+                <div style="margin-bottom:1.75rem;">
+                    <div style="font-size:0.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;letter-spacing:0.05em;">
+                        4. Cognitive Rest &amp; Mentorship
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                        <!-- Sleep Hours -->
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="sleep_hours">
+                                <span>Sleep (Hours/Day)</span>
+                            </label>
+                            <input type="number" id="sleep_hours" name="sleep_hours" min="4.0" max="10.0" step="0.5" value="7.5" class="form-control" required>
+                        </div>
+
+                        <!-- Tutoring Sessions -->
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label class="form-label" for="tutoring_sessions">
+                                <span>Tutoring / Month</span>
+                            </label>
+                            <input type="number" id="tutoring_sessions" name="tutoring_sessions" min="0" max="8" step="1" value="2" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-predict" style="width:100%;">
+                    <i data-lucide="sparkles" style="width:18px;height:18px;"></i>
+                    <span id="predict-btn-text">Compute AI Prediction</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Result Card (Populated Dynamically via AJAX) -->
+        <div id="result-container" class="card result-card" style="display:none;">
+            <!-- Score & Tier Header -->
+            <div class="result-header">
+                <div>
+                    <span id="res-badge" class="badge badge-success">Distinction</span>
+                    <h3 id="res-student-header" style="margin:0.4rem 0 0.1rem;">Aarav Sharma</h3>
+                    <div id="res-ci-text" style="font-size:0.85rem;color:var(--text-muted);">
+                        90% Confidence Interval: [82.5 &ndash; 88.5]
+                    </div>
+                </div>
+
+                <div class="score-circle" id="score-meter" style="--score-pct: 85;">
+                    <div class="score-circle-inner">
+                        <span class="score-number" id="res-score-number">85.4</span>
+                        <span class="score-max">/ 100</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body: Attributions & Recommendations -->
+            <div style="padding: 1.5rem;">
+                <!-- Key Factor Attribution Analysis -->
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+                        <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.05em;">
+                            Influential Factors (Point Attribution)
+                        </div>
+                        <span style="font-size:0.75rem;color:var(--text-muted);">vs Cohort Median</span>
+                    </div>
+                    <div id="res-impact-list">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Actionable Recommendations -->
+                <div style="margin-bottom: 1.75rem;">
+                    <div style="font-size:0.85rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:0.75rem;">
+                        Strategic Improvement Recommendations
+                    </div>
+                    <div id="res-recommendations-list">
+                        <!-- Injected via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Actions: Print / View Report -->
+                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;padding-top:1rem;border-top:1px solid var(--border-subtle);">
+                    <a href="#" id="res-report-link" class="btn btn-secondary btn-sm" target="_blank">
+                        <i data-lucide="printer" style="width:14px;height:14px;"></i> View Printable Report
+                    </a>
+                    <a href="{{ url_for('history') }}" class="btn btn-outline btn-sm">
+                        <i data-lucide="history" style="width:14px;height:14px;"></i> View in History
+                    </a>
+                </div>
+
+                <!-- Disclaimer -->
+                <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:var(--bg-subtle);border-radius:var(--radius-sm);font-size:0.78rem;color:var(--text-muted);line-height:1.5;">
+                    <strong>Ethical AI Notice:</strong> Predictions are statistical projections based on empirical learning trends and are intended solely for academic advisory planning.
+                </div>
+            </div>
+        </div>
+
+        <!-- Initial Placeholder State when no prediction has been submitted yet -->
+        <div id="placeholder-container" class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 2rem;">
+            <div style="width:64px;height:64px;border-radius:50%;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;">
+                <i data-lucide="sparkles" style="width:32px;height:32px;"></i>
+            </div>
+            <h3 style="margin-bottom:0.5rem;">Awaiting Student Input</h3>
+            <p style="max-width:380px;font-size:0.95rem;color:var(--text-muted);margin-bottom:1.5rem;">
+                Adjust the academic indicators on the left or click one of the quick test profiles above, then click <strong>Compute AI Prediction</strong>.
+            </p>
+            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem;color:var(--text-muted);">
+                <i data-lucide="shield-check" style="width:16px;height:16px;color:var(--emerald-500);"></i>
+                Trained Champion Model: Gradient Boosting (R² = 0.922)
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function handlePredictionSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-submit-predict');
+    const btnText = document.getElementById('predict-btn-text');
+    
+    // Set loading state
+    btn.disabled = true;
+    btnText.textContent = 'Analyzing Academic Indicators...';
+
+    const formData = {
+        student_id: document.getElementById('student_id').value,
+        student_name: document.getElementById('student_name').value,
+        study_hours: document.getElementById('study_hours').value,
+        attendance: document.getElementById('attendance').value,
+        previous_score: document.getElementById('previous_score').value,
+        assignment_score: document.getElementById('assignment_score').value,
+        sleep_hours: document.getElementById('sleep_hours').value,
+        tutoring_sessions: document.getElementById('tutoring_sessions').value,
+    };
+
+    try {
+        const response = await fetch('/api/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            renderPredictionResults(data);
+            showToast('Prediction computed and saved to history!', 'success');
+        } else {
+            const errorMsg = data.errors ? data.errors.join(' ') : (data.error || 'Prediction failed');
+            showToast(errorMsg, 'error', 5000);
+        }
+    } catch (err) {
+        showToast('Network error while computing prediction.', 'error');
+    } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Compute AI Prediction';
+    }
+}
+
+function renderPredictionResults(data) {
+    const placeholder = document.getElementById('placeholder-container');
+    const resultCard = document.getElementById('result-container');
+    
+    if (placeholder) placeholder.style.display = 'none';
+    if (resultCard) resultCard.style.display = 'block';
+
+    // Header info
+    document.getElementById('res-student-header').textContent = `${data.inputs.student_name || 'Student'} (${data.inputs.student_id})`;
+    document.getElementById('res-score-number').textContent = data.predicted_score;
+    document.getElementById('res-ci-text').textContent = `90% Confidence Band: [${data.confidence_interval.lower} – ${data.confidence_interval.upper} marks] (±${data.confidence_interval.margin} pts)`;
+
+    // Category Badge
+    const badge = document.getElementById('res-badge');
+    badge.className = `badge badge-${data.category.badge}`;
+    badge.textContent = data.category.name;
+
+    // Score Meter Circle
+    const meter = document.getElementById('score-meter');
+    meter.style.setProperty('--score-pct', Math.round(data.predicted_score));
+
+    // Factor Impacts
+    const impactContainer = document.getElementById('res-impact-list');
+    impactContainer.innerHTML = '';
+    data.factor_impacts.forEach(factor => {
+        const item = document.createElement('div');
+        item.className = 'impact-bar-item';
+        
+        const sign = factor.impact_points > 0 ? '+' : '';
+        const statusColor = factor.status === 'positive' ? 'var(--emerald-500)' : (factor.status === 'negative' ? 'var(--rose-500)' : 'var(--text-muted)');
+        const absVal = Math.min(100, Math.abs(factor.impact_points) * 12);
+
+        item.innerHTML = `
+            <div class="impact-bar-header">
+                <span style="font-weight:600;">${factor.label} (${factor.value} ${factor.unit})</span>
+                <span style="font-weight:700;color:${statusColor};">${sign}${factor.impact_points} pts</span>
+            </div>
+            <div class="impact-track">
+                <div class="impact-fill ${factor.status}" style="width: ${absVal}%;"></div>
+            </div>
+            <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;">${factor.description}</div>
+        `;
+        impactContainer.appendChild(item);
+    });
+
+    // Recommendations
+    const recContainer = document.getElementById('res-recommendations-list');
+    recContainer.innerHTML = '';
+    data.recommendations.forEach(rec => {
+        const item = document.createElement('div');
+        item.className = `rec-item ${rec.type}`;
+        item.innerHTML = `
+            <div class="rec-title">
+                <span class="badge badge-neutral" style="font-size:0.7rem;">${rec.badge}</span>
+                <span>${rec.title}</span>
+            </div>
+            <div style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;">${rec.text}</div>
+        `;
+        recContainer.appendChild(item);
+    });
+
+    // Printable report link
+    if (data.record_id) {
+        document.getElementById('res-report-link').href = `/report/${data.record_id}`;
+    }
+
+    if (window.lucide) lucide.createIcons();
+    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
+{% endblock %}

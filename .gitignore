@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Local environment and editor files
+.env
+.vscode/
+.idea/
+
+# Generated trained model and chart
+models/*.joblib
+reports/*.png
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+htmlcov/
